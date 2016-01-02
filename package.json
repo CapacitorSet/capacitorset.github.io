@@ -1,0 +1,10 @@
+{
+	"author": {
+		"name": "Capacitor Set",
+		"email": "capacitorset@users.noreply.github.com",
+		"url": "https://capacitorset.github.io/"
+	},
+	"dependencies": {
+		"jade": "*"
+	}
+}
