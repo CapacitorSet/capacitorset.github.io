@@ -3,6 +3,10 @@ head
 	title CapacitorSet
 	// Bootstrap CSS
 	link(rel="stylesheet" href="bootstrap.min.css")
+	style.
+		.well {
+			padding-top: 0px;
+		}
 body.container
 	.page-header
 		h1
@@ -33,6 +37,7 @@ body.container
 							"CSS": "mediocre",
 							"Bootstrap": "good",
 							"Jade": "very good",
+							"Markdown": "very good",
 							"C": "good",
 							"Java": "mediocre",
 							"Python": "mediocre",
@@ -50,6 +55,13 @@ body.container
 										td=level
 		.col-md-6
 			h2 My projects
+			.well
+				h3
+					a(href="https://github.com/CapacitorSet/fsm-maker") fsm-maker
+				p.
+					Creates C implementations of finite state machines from simple JSON descriptions. Features a complete Markdown documentation.
+				i.
+					Node.js, JSON, C, Markdown
 			.well
 				h3
 					a(href="https://github.com/CapacitorSet/node-scorekeeping") node-scorekeeping
