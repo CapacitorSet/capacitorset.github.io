@@ -153,21 +153,31 @@ html(lang='it')
 						h3 Funzione peso (3D)
 						img(src="./3d.png")
 				section
-					section: h3 Software impiegato
 					section
-						h3 Rappresentazione intermedia: MySQL 5.5
+						h3 Software impiegato
+						ul
+							li Rappresentazione: MySQL
+							li Elaborazione: R
+							li Presentazione: Reveal.js
+							li Pubblicazione: GitHub Pages
+					section
+						h3 Rappresentazione: MySQL 5.5
 						p.
-							I dati sono stati immagazzinati in un database MySQL in 3NF: una tabella mappa gli ID delle centraline ai rispettivi nomi, e un'altra raccoglie i dati nella forma "ID centralina, data, temperatura". I dati sono accessibili tramite una view, che internamente corrisponde a un inner join tra le due tabelle.
+							I dati sono stati immagazzinati in un database MySQL in 3NF: una tabella mappa gli ID delle centraline ai rispettivi nomi, e un'altra raccoglie i dati nella forma "ID centralina, data, temperatura".
 						p.
 							Con MySQL si è immagazzinato i dati, li si è filtrati (rimozione valori non validi), e si sono compiute semplici analisi. Si sono poi esportati i dati invernali in CSV.
 					section
-						h3 Elaborazione dati: R 3.0
+						h3 Elaborazione: R 3.0
 						p.
-							I dati sono stati importati in R, che ha consentito di trovare velocemente la media e i boxplot con due semplici comandi.
+							I dati sono stati importati in R, che ha consentito di trovare velocemente la media e i boxplot con due semplici comandi: rispettivamente <kbd>mean</kbd> e <kbd>boxplot</kbd>.
+						p.
+							Per comodità si è usato un frontend grafico per R, Rstudio.
 					section
-						h3 Presentazione: Reveal.js, GitHub Pages
+						h3 Presentazione: Reveal.js
 						p.
-							Questa presentazione è stata scritta in HTML con il framework Reveal.js, che permette di creare flessibilmente presentazioni eleganti in tempi minimi. Inoltre, la rende accessibile online a qualsiasi dispositivo Internet-capable, dai cellulari ai desktop.
+							Questa presentazione è stata scritta in HTML con il framework Reveal.js, che permette di creare flessibilmente presentazioni eleganti in tempi minimi. Inoltre, la rende accessibile a qualsiasi dispositivo dotato di browser: cellulari, tablet, Surface o desktop.
+					section
+						h3 Pubblicazione: GitHub Pages
 						p.
 							La presentazione è ospitata tramite GitHub Pages, che fornisce hosting statico gratuito. La presentazione è  gestita tramite un VCS, che permette uno sviluppo molto più completo (commit history, branch, rollback) rispetto ad altre soluzioni.
 		script(src='lib/js/head.min.js')
