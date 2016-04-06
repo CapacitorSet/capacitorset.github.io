@@ -76,9 +76,9 @@ html(lang='it')
 					p.
 						E' possibile navigare la presentazione usando i tasti freccia, oppure i gesti su dispositivi touch.
 					p.
-						Le slide vanno da sinistra verso destra; ad alcune slide sono associate altre schermate di approfondimento, verso il basso.
+						Le slide vanno da sinistra verso destra.
 					p.
-						Con il tasto Esc si può accedere a uno schema completo della presentazione.
+						Ad alcune slide sono associate altre schermate di approfondimento, a cui si può accedere scorrendo verso il basso.
 				section
 					section
 						h3 Obiettivo
@@ -95,19 +95,6 @@ html(lang='it')
 								li Documentazione.
 				section
 					section
-						h3 Problema: interpolazione
-						dd.
-							Si dispone di dati limitati (i dati non sono disponibili appartamento per appartamento): è quindi necessario fare un'<b>interpolazione</b> nello spazio.
-					section
-						h3 Problema: calcolo della media
-						dd.
-							Si dispone di circa 100k datapoint, e si vuole determinare un unico valore di temperatura, noto come "media stagionale".
-					section
-						h3 Formalizzazione
-						p.
-							Date N tuple \[(\text{Tempo}\in\mathbb N, \text{Temperatura}\in\mathbb R, \text{Posizione}\in\mathbb R^2)\] si vuole ricavare un campo scalare \[T_{media} = \mathbb R^2\rightarrow\mathbb R\]
-				section
-					section
 						h3 Raccolta dati
 						p.
 							I dati sono stati richiesti tramite la <a href="http://www2.arpalombardia.it/siti/arpalombardia/meteo/richiesta-dati-misurati/Pagine/RichiestaDatiMisurati.aspx">piattaforma Web</a> dell'ARPA Lombardia.
@@ -118,16 +105,28 @@ html(lang='it')
 						p.
 							Si definisce errore di discretizzazione quello dovuto alla conversione di una funzione continua a valori continui \[f:\mathbb R\rightarrow S\] in una discreta a valori discreti \[g:\mathbb N\rightarrow S'\] (con \(S'\) <a href="http://mathworld.wolfram.com/DiscreteSet.html">discreto</a>).
 				section
+					h3 Problema: interpolazione
+					dd.
+						Si dispone di dati limitati (i dati non sono disponibili appartamento per appartamento): è quindi necessario fare un'<b>interpolazione</b> nello spazio.
+					p.
+						Considerato che si dispone solamente di 2 data source con valori molto simili (la differenza tra le medie è circa 0,9 °C), si decide di ignorare questo problema, considerando la temperatura come un campo scalare uniforme ($\nabla T=0$).
+				section
 					section
-						h3 Calcolo della media stagionale
+						h3 Problema: calcolo della media
+						dd.
+							Si dispone di circa 100k datapoint, e si vuole determinare un unico valore di temperatura, noto come "media stagionale".
+						p.
+							Formalmente, date N tuple \[\langle\text{Tempo}\in\mathbb N, \text{Temperatura}\in\mathbb R, \text{Posizione}\in\mathbb R^2\rangle\] si vuole ricavare un campo scalare \[T_{media} = \mathbb R^2\rightarrow\mathbb R\]
+					section
+						h3 Tipi di media
 						p.
 							Cerchiamo una funzione che dati N rilevamenti \(x\in\mathbb R\) produca un valore medio \(x'\in\mathbb R\)\[media:\mathbb R^N\rightarrow\mathbb R\]
 						p
 							| Tradizionalmente, si usano queste medie:
 							ul
-								li <b>Aritmetica</b>, \(\frac 1n\sum{i=0}^nx_i\);
-								li <b>Geometrica</b>, \(\sqrt[n]{\prod_{i=0}^nx_i}\)
-								li <b>Armonica</b>, l'inverso della media dei reciproci.
+								li <b>Aritmetica</b>, \(\frac 1n\sum_{i=0}^nx_i\);
+								li <b>Armonica</b>, l'inverso della media dei reciproci;
+								li <b>Geometrica</b>, \(\sqrt[n]{\prod_{i=0}^nx_i}\).
 					section
 						h3 Scelta della media
 						p.
@@ -136,22 +135,33 @@ html(lang='it')
 							Scegliamo quindi la media classica (aritmetica):\[media({x_0,x_1,\dots x_n})=\frac 1n\sum_{i=0}^nx_i\]
 				section
 					section
-						h3 Interpolazione spaziale
+						h2 Risultati
+					section
+						h3 Temperatura media stagionale
+						table
+							thead
+								tr
+									th Centralina
+									th Media aritmetica
+							tbody
+								tr
+									td Pastori
+									td 5,9 °C
+								tr
+									td Ziziola
+									td 5,1 °C
+								tr
+									td: i Media
+									td 5,5 °C
+						small.
+							L'ARPA fornisce rilevamenti a una cifra significativa, pertanto anche i risultati sono a una cifra significativa.
+					section
+						h3 Boxplot
+						img(src="boxplot.png")
+					section
+						h3 Commento
 						p.
-							Scegliamo di dare a ciascuna <i>data source</i> un peso inversamente proporzionale al quadrato della distanza (come l'intensità di una radiazione): il peso è un campo scalare \[P(x,y,z)=\frac{1}{\Delta s^2}=\frac{1}{(\Delta x)^2+(\Delta y)^2+(\Delta z)^2}\]
-					section
-						h3 Condizionamento
-						p.
-							Il valore \(\lim_{\Delta s\rightarrow 0} P(x,y,z)=+\infty\) è indesiderabile: per ovviare a questo problema aggiungiamo un fattore costante \(c\) al denominatore, in modo che \(\lim_{\Delta s\rightarrow 0} P = c\).
-							\[
-							P(x,y,z)=\frac{1}{\Delta s^2+c}=\frac{1}{(\Delta x)^2+(\Delta y)^2+(\Delta z)^2+c}
-							\]
-					section
-						h3 Funzione peso (2D)
-						img(src="./linea.png")
-					section
-						h3 Funzione peso (3D)
-						img(src="./3d.png")
+							Il box plot mostra che la stazione di rilevamento "Pastori" tende a registrare temperature leggermente più alte, e mostra dati più "sparsi" (lo scarto interquartile è maggiore). Effettivamente, questi dati presentano $\sigma^2=4,577$, mentre quelli rilevati in via Ziziola hanno $\sigma^"=4,121$. 
 				section
 					section
 						h3 Software impiegato
