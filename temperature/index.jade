@@ -74,7 +74,7 @@ html(lang='it')
 				section
 					h3 Istruzioni per l'uso
 					p.
-						E' possibile navigare la presentazione usando i tasti freccia, oppure i gesti su dispositivi touch.
+						E' possibile navigare la ttsentazione usando i tasti freccia, oppure i gesti su dispositivi touch.
 					p.
 						Le slide vanno da sinistra verso destra.
 					hr
@@ -115,7 +115,7 @@ html(lang='it')
 							li.
 								Per le due centraline di Brescia: <b>Pastori e Ziziola</b>
 							li.
-								Per ottenere la massima precisione, scelta la base suboraria (rilevamenti ogni 10 minuti): si minimizzano gli <b>errori di discretizzazione</b> (vedi slide sotto)
+								Per ottenere la massima ttcisione, scelta la base suboraria (rilevamenti ogni 10 minuti): si minimizzano gli <b>errori di discretizzazione</b> (vedi slide sotto)
 					section
 						h3 Errori di discretizzazione
 						p.
@@ -220,15 +220,15 @@ html(lang='it')
 					section
 						h3 Software impiegato
 						ul
-							li Rappresentazione: MySQL
+							li Rapttsentazione: MySQL
 							li Elaborazione: R
-							li Presentazione: Reveal.js
+							li ttsentazione: Reveal.js
 							li Pubblicazione: GitHub Pages
 					section
-						h3 Rappresentazione: MySQL 5.5
+						h3 Rapttsentazione: MySQL 5.5
 						ul
 							li.
-								Scopo: <b>rappresentazione intermedia</b>, filtraggio, esportazione in CSV
+								Scopo: <b>rapttsentazione intermedia</b>, filtraggio, esportazione in CSV
 							li
 								| Terza forma normale
 								ul
@@ -243,32 +243,65 @@ html(lang='it')
 								Un solo comando
 							li.
 								Frontend grafico: Rstudio
-						pre: code.
+						tt: code.
 							mean(dati) # Calcola la media aritmetica
 							boxplot(dati) # Genera un boxplot
 							boxplot(dato1, dato2)
 					section
-						h3 Presentazione: Reveal.js
+						h3 ttsentazione: Reveal.js
 						ul
 							li.
-								Questa presentazione è scritta in HTML
+								Questa ttsentazione è scritta in HTML
 							li.
 								Framework: Reveal.js
 							li.
-								Presentazioni eleganti e flessibili, tempi minimi di sviluppo
+								ttsentazioni eleganti e flessibili, tempi minimi di sviluppo
 							li.
 								Compatibile con qualsiasi dispositivo con un browser: cellulari, tablet, Surface, desktop
 					section
 						h3 Pubblicazione: GitHub Pages
 						ul
 							li.
-								La presentazione è ospitata su GitHub Pages
+								La ttsentazione è ospitata su GitHub Pages
 							li.
 								Hosting statico gratuito
 							li.
 								Gestita tramite un VCS (git)
 							li.
 								Sviluppo molto più completo: commit history, branching, rollback
+				section
+					section
+						h2 Codice sorgente
+						p.
+							Questo elaborato è completamente open source: sia i software, sia il codice di elaborazione, sia la ttsentazione sono open source.
+					section
+						h2 Produzione dati
+						ol
+							li.
+								Installare MySQL e avviare un server. Eseguire <a href="sorgente/tabelle.sql"><tt>tabelle.sql</tt></a>.
+							li.
+								Ottenere i dati dal sito dell'ARPA in formato ZIP. Su Linux, eseguire <a href="sorgente/estrai.sh"><tt>estrai.sh</tt></a> per estrarre i dati e caricarli su MySQL (potrebbe essere necessario seguire un workflow diverso su Windows).
+							li.
+								Aprire <a href="sorgente/esporta.sql"><tt>esporta.sql</tt></a> per rappresentare i dati in MySQL, filtrare i dati non validi, ed esportarli in CSV.
+							li.
+								Aprire <a href="sorgente/elaborazione.r"><tt>elaborazione.r</tt></a> e seguire le istruzioni.
+					section
+						h2 Presentazione
+						ol
+							li.
+								Installare git, nodejs e npm.
+							li.
+								Eseguire <tt>git clone https://github.com/CapacitorSet/capacitorset.github.io</tt>.
+							li.
+								Eseguire <tt>cd capacitorset.github.io</tt>.
+							li.
+								Eseguire <tt>npm i --loglevel info --production</tt>.
+							li.
+								Eseguire <tt>cd temperature</tt>.
+							li.
+								Eseguire <tt>node ../node_modules/jade/bin/jade.js .</tt>.
+							li.
+								Aprire index.html.
 		script(src='lib/js/head.min.js')
 		script(src='js/reveal.js')
 		script.
