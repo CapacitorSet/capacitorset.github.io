@@ -5,44 +5,45 @@ head
 body.container
 	.page-header: h1 @CapacitorSet 
 
+	h1 My projects
 	.row
-		h1 My projects
-		.row
-			.col-md-6.well
-				b Highlight
-				h3: a(href="https://github.com/CapacitorSet/box-js") box-js
-				p.
-					A tool for studying malware (droppers) written in JavaScript and JScript. It makes use of the Node.js sandbox and provides a dummy implementation of some key ActiveX components (XMLHTTP, ADODB.Stream and others). Used successfully in a "real environment" to automate malware analysis, as well as the <a href="https://github.com/ArchStrike/ArchStrike">ArchStrike</a> repo (<tt>boxjs-git</tt>).
-				i Node.js
-			.col-md-6.well
-				b Highlight
-				h3: a(href="https://github.com/CapacitorSet/rebridge") rebridge
-				p.
-					A completely transparent bridge between JavaScript and Redis, as a Node.js package (<a href="https://www.npmjs.com/package/rebridge">rebridge</a> on npm). Used successfully in <a href="https://github.com/crisbal/Telegram-Bot-Node/">Telegram-Bot-Node</a> as a persistent storage solution.
-				i Node.jscd re
-		.row
-			.col-md-6
-				h3: a(href="https://github.com/CapacitorSet/fsm-maker") fsm-maker
-				p.
-					Creates C implementations of finite state machines from simple YAML descriptions. Features a complete Markdown documentation.
-				i Node.js, YAML, C, Markdown
-			.col-md-6
-				h3: a(href="https://github.com/CapacitorSet/node-scorekeeping") node-scorekeeping
-				p.
-					An application for managing scores for any number of sports. Supports live data collection, HTTPS, authentication, read-only accounts.
-				i Node.js, MySQL, Jade, Bootstrap, HTML5
-		.row
-			.col-md-6
-				h3
-					a(href="https://github.com/CapacitorSet/mysql-json-api") mysql-json-api
-				p.
-					A simple Node.js wrapper around a MySQL database that exposes an HTTP/S JSON API.
-				i.
-					Node.js
-			.col-md-6
-				h3
-					a(href="https://github.com/CapacitorSet/node-print-server") node-print-server
-				p.
-					A Web interface for printing documents.
-				i.
-					Node.js
+		.col-md-6.well
+			b Highlight
+			h3: a(href="https://github.com/CapacitorSet/box-js") box-js
+			p.
+				A tool for studying malware (droppers) written in JavaScript and JScript. It makes use of the Node.js sandbox and provides a dummy implementation of some key ActiveX components (XMLHTTP, ADODB.Stream and others). Used successfully in a "real environment" to automate malware analysis, as well as the <a href="https://github.com/ArchStrike/ArchStrike">ArchStrike</a> repo (<tt>boxjs-git</tt>).
+			i Node.js
+		.col-md-6.well
+			b Highlight
+			h3: a(href="https://github.com/CapacitorSet/rebridge") rebridge
+			p.
+				A completely transparent bridge between JavaScript and Redis, as a Node.js package (<a href="https://www.npmjs.com/package/rebridge">rebridge</a> on npm). Used successfully in <a href="https://github.com/crisbal/Telegram-Bot-Node/">Telegram-Bot-Node</a> as a persistent storage solution.
+			i Node.jscd re
+	.row
+		.col-md-6
+			h3: a(href="https://github.com/CapacitorSet/fsm-maker") fsm-maker
+			p.
+				Creates C implementations of finite state machines from simple YAML descriptions. Features a complete Markdown documentation.
+			i Node.js, YAML, C, Markdown
+		.col-md-6
+			h3: a(href="https://github.com/CapacitorSet/node-scorekeeping") node-scorekeeping
+			p.
+				An application for managing scores for any number of sports. Supports live data collection, HTTPS, authentication, read-only accounts.
+			i Node.js, MySQL, Jade, Bootstrap, HTML5
+	.row
+		.col-md-6
+			h3: a(href="https://github.com/CapacitorSet/mysql-json-api") mysql-json-api
+			p.
+				A simple Node.js wrapper around a MySQL database that exposes an HTTP/S JSON API.
+			i Node.js
+		.col-md-6
+			h3: a(href="https://github.com/CapacitorSet/node-print-server") node-print-server
+			p.
+				A Web interface for printing documents.
+			i Node.js
+	hr
+	h1 My contributions
+	h3: a(href="https://github.com/crisbal/Telegram-Bot-Node") Telegram-Bot-Node
+	p.
+		A Telegram bot written in ES7 Node.js. Implements a plugin architecture, uses Rebridge to implement persistent state for plugins.
+	i Node.js
