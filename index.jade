@@ -1,92 +1,48 @@
 doctype html
 head
 	title CapacitorSet
-	// Bootstrap CSS
 	link(rel="stylesheet" href="bootstrap.min.css")
-	style.
-		.panel-body {
-			padding-top: 0px;
-		}
 body.container
-	.page-header
-		h1
-			// Notice the trailing space.
-			| @CapacitorSet 
-			small Web developer, Node.js enthusiast, esperantisto
+	.page-header: h1 @CapacitorSet 
 
 	.row
-		.col-md-6
-			h2 Languages
-			.row
-				-
-					languages = {
-						Natural: {
-							Italian: "native",
-							English: "C1",
-							French: "B2",
-							German: "B1",
-							Esperanto: "?",
-							Russian: "A0"
-						},
-						Programming: {
-							"Node.js": "very good",
-							"PHP": "good",
-							"MySQL": "good",
-							"HTML5": "good",
-							"Client-side JS": "good",
-							"CSS": "mediocre",
-							"Bootstrap": "good",
-							"Jade": "very good",
-							"Markdown": "very good",
-							"C": "good",
-							"Java": "mediocre",
-							"Python": "mediocre",
-							"AutoIt": "mediocre"
-						}
-					}
-				each skills,type in languages
-					.col-md-6
-						table.table.table-striped
-							thead: h3=type
-							tbody
-								each level,language in skills
-									tr
-										td: b=language
-										td=level
-		.col-md-6
-			h2 My projects
-			.panel.panel-default: .panel-body
-				h3
-					a(href="https://github.com/CapacitorSet/fsm-maker") fsm-maker
+		h1 My projects
+		.row
+			.col-md-6.well
+				b Highlight
+				h3: a(href="https://github.com/CapacitorSet/box-js") box-js
 				p.
-					Creates C implementations of finite state machines from simple JSON descriptions. Features a complete Markdown documentation.
-				i.
-					Node.js, JSON, C, Markdown
-			.panel.panel-default: .panel-body
-				h3
-					a(href="https://github.com/CapacitorSet/node-scorekeeping") node-scorekeeping
+					A tool for studying malware (droppers) written in JavaScript and JScript. It makes use of the Node.js sandbox and provides a dummy implementation of some key ActiveX components (XMLHTTP, ADODB.Stream and others). Used successfully in a "real environment" to automate malware analysis, as well as the <a href="https://github.com/ArchStrike/ArchStrike">ArchStrike</a> repo (<tt>boxjs-git</tt>).
+				i Node.js
+			.col-md-6.well
+				b Highlight
+				h3: a(href="https://github.com/CapacitorSet/rebridge") rebridge
+				p.
+					A completely transparent bridge between JavaScript and Redis, as a Node.js package (<a href="https://www.npmjs.com/package/rebridge">rebridge</a> on npm). Used successfully in <a href="https://github.com/crisbal/Telegram-Bot-Node/">Telegram-Bot-Node</a> as a persistent storage solution.
+				i Node.jscd re
+		.row
+			.col-md-6
+				h3: a(href="https://github.com/CapacitorSet/fsm-maker") fsm-maker
+				p.
+					Creates C implementations of finite state machines from simple YAML descriptions. Features a complete Markdown documentation.
+				i Node.js, YAML, C, Markdown
+			.col-md-6
+				h3: a(href="https://github.com/CapacitorSet/node-scorekeeping") node-scorekeeping
 				p.
 					An application for managing scores for any number of sports. Supports live data collection, HTTPS, authentication, read-only accounts.
-				i.
-					Node.js, MySQL, Jade, Bootstrap, HTML5
-			.panel.panel-default: .panel-body
+				i Node.js, MySQL, Jade, Bootstrap, HTML5
+		.row
+			.col-md-6
 				h3
 					a(href="https://github.com/CapacitorSet/mysql-json-api") mysql-json-api
 				p.
 					A simple Node.js wrapper around a MySQL database that exposes an HTTP/S JSON API.
 				i.
 					Node.js
-			.panel.panel-default: .panel-body
+			.col-md-6
 				h3
 					a(href="https://github.com/CapacitorSet/node-print-server") node-print-server
 				p.
 					A Web interface for printing documents.
 				i.
 					Node.js
-			.panel.panel-default: .panel-body
-				h3
-					a(href="https://github.com/CapacitorSet/Asteroids-and-stuff") Asteroids-and-stuff
-				p.
-					A graphical simulation of a system of asteroids, based on Euler's integrator.
-				i.
-					Java
