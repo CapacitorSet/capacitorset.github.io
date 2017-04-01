@@ -157,4 +157,6 @@ Over a course of two days, we worked with the author to help fix the vulnerabili
 
 >This vulnerability was discovered by [\@CapacitorSet](https://github.com/CapacitorSet) and [\@denysvitali](https://github.com/denysvitali). Thanks to [\@josdejong](https://github.com/josdejong/) for promptly fixing the vulnerability and [JSFuck](http://www.jsfuck.com/) for discovering the `[].filter.constructor` trick.
 >
+>A clarification from Jos: math.js does not "evaluate JavaScript" as previously thought, rather, it "has its own parser with its own math oriented syntax and its own operators and functions. But these functions are still JavaScript functions of course."
+>
 ><small>Released under [**CC-BY 4.0**](https://creativecommons.org/licenses/by/4.0/).
