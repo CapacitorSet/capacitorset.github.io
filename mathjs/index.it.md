@@ -99,7 +99,7 @@ Dopo aver trovato una vulnerabilità e l'abbiamo sfruttata al massimo, abbiamo d
  - una **dimostrazione** sul server live (abbiamo incluso l'output di `whoami` e `uname -a`);
  - suggerimenti su **come sistemare la vulnerabilità** (ad esempio, usando [il modulo `vm` in Node.js](https://nodejs.org/api/vm.html)).
 
-Abbiamo lavorato con l'autore per due giorni per aiutarlo a sistemare la vulnerabilità. In particolare, dopo la fix inclusa in [`2f45600`](https://github.com/josdejong/mathjs/commit/2f456009056bc332673f45ca143d4d92c8c7b159) abbiamo trovato un altro modo di aggirarla (se non si può usare direttamente il costruttore, basta usare `cos.constructor.apply(null, "code")()`) che è stata sistemata in [`3c3517d`](https://github.com/josdejong/mathjs/commit/3c3517daa6412457826b79b60368d8e8e415a7dd).
+Abbiamo lavorato con l'autore per due giorni per aiutarlo a sistemare la vulnerabilità. In particolare, dopo la fix inclusa in [`2f45600`](https://github.com/josdejong/mathjs/commit/2f456009056bc332673f45ca143d4d92c8c7b159) abbiamo trovato un altro modo di aggirarla (se non si può usare direttamente il costruttore, basta usare `cos.constructor.apply(null, "code")()`) che è stato sistemato in [`3c3517d`](https://github.com/josdejong/mathjs/commit/3c3517daa6412457826b79b60368d8e8e415a7dd).
 
 ### Timeline
  - 26 Marzo 2017 22:20 CEST: primo exploit avvenuto con successo

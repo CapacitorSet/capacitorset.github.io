@@ -105,7 +105,7 @@ Result: {&quot;status&quot;: 0, &quot;signal&quot;: null, &quot;output&quot;: [n
 <li>una <strong>dimostrazione</strong> sul server live (abbiamo incluso l'output di <code>whoami</code> e <code>uname -a</code>);</li>
 <li>suggerimenti su <strong>come sistemare la vulnerabilità</strong> (ad esempio, usando <a href="https://nodejs.org/api/vm.html">il modulo <code>vm</code> in Node.js</a>).</li>
 </ul>
-<p>Abbiamo lavorato con l'autore per due giorni per aiutarlo a sistemare la vulnerabilità. In particolare, dopo la fix inclusa in <a href="https://github.com/josdejong/mathjs/commit/2f456009056bc332673f45ca143d4d92c8c7b159"><code>2f45600</code></a> abbiamo trovato un altro modo di aggirarla (se non si può usare direttamente il costruttore, basta usare <code>cos.constructor.apply(null, &quot;code&quot;)()</code>) che è stata sistemata in <a href="https://github.com/josdejong/mathjs/commit/3c3517daa6412457826b79b60368d8e8e415a7dd"><code>3c3517d</code></a>.</p>
+<p>Abbiamo lavorato con l'autore per due giorni per aiutarlo a sistemare la vulnerabilità. In particolare, dopo la fix inclusa in <a href="https://github.com/josdejong/mathjs/commit/2f456009056bc332673f45ca143d4d92c8c7b159"><code>2f45600</code></a> abbiamo trovato un altro modo di aggirarla (se non si può usare direttamente il costruttore, basta usare <code>cos.constructor.apply(null, &quot;code&quot;)()</code>) che è stato sistemato in <a href="https://github.com/josdejong/mathjs/commit/3c3517daa6412457826b79b60368d8e8e415a7dd"><code>3c3517d</code></a>.</p>
 <h3 id="timeline">Timeline</h3>
 <ul>
 <li>26 Marzo 2017 22:20 CEST: primo exploit avvenuto con successo</li>
