@@ -25,14 +25,13 @@ $for(header-includes)$
 $endfor$
   <style type="text/css">
     /* Source: https://bestmotherfucking.website (with changes) */
-    body{
+    body {
       margin: 0 auto;
       max-width: 40em;
       padding: 1rem .62em;
       font-size: 1.2em;
       line-height: 1.62;
       font-family: "Open Sans", sans-serif;
-      font: 1.2em/1.62 ;
     }
     h1, h2, h3 {
       line-height: 1.2;
@@ -51,6 +50,9 @@ $endfor$
       margin-bottom: 1rem;
       overflow: auto;
     }
+    a, a:visited {
+      color: #07a;
+    }
 
     @media print {
       body {
@@ -60,31 +62,6 @@ $endfor$
   </style>
 </head>
 <body>
-$for(include-before)$
-$include-before$
-$endfor$
-$if(title)$
-<header>
-<h1 class="title">$title$</h1>
-$if(subtitle)$
-<p class="subtitle">$subtitle$</p>
-$endif$
-$for(author)$
-<p class="author">$author$</p>
-$endfor$
-$if(date)$
-<p class="date">$date$</p>
-$endif$
-</header>
-$endif$
-$if(toc)$
-<nav id="$idprefix$TOC">
-$toc$
-</nav>
-$endif$
 $body$
-$for(include-after)$
-$include-after$
-$endfor$
 </body>
 </html>
