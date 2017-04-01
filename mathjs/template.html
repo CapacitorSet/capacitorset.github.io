@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html$if(lang)$ lang="$lang$"$endif$$if(dir)$ dir="$dir$"$endif$>
+<head>
+  <meta charset="utf-8">
+  <meta name="generator" content="pandoc">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+  <meta name="author" content="CapacitorSet">
+  <title>$pagetitle$</title>
+  <style type="text/css">code{white-space: pre;}</style>
+$if(quotes)$
+  <style type="text/css">q { quotes: "“" "”" "‘" "’"; }</style>
+$endif$
+$if(highlighting-css)$
+  <style type="text/css">
+$highlighting-css$
+  </style>
+$endif$
+$for(css)$
+  <link rel="stylesheet" href="$css$">
+$endfor$
+$if(math)$
+  $math$
+$endif$
+$for(header-includes)$
+  $header-includes$
+$endfor$
+  <style type="text/css">
+    /* Source: https://bestmotherfucking.website (with changes) */
+    body{
+      margin: 1em auto;
+      max-width: 40em;
+      padding: 0 .62em;
+      font: 1.2em/1.62 sans-serif;
+    }
+    p {
+      text-align: justify;
+    }
+    h1, h2, h3 {
+      line-height: 1.2;
+    }
+    blockquote {
+      background-color: #eee;
+      border-left: 6px solid silver;
+      padding: 0.1em 1em 0.1em 1em;
+    }
+    pre, code {
+      overflow: scroll
+    }
+    @media print {
+      body {
+        max-width:none
+      }
+    }
+  </style>
+</head>
+<body>
+$for(include-before)$
+$include-before$
+$endfor$
+$if(title)$
+<header>
+<h1 class="title">$title$</h1>
+$if(subtitle)$
+<p class="subtitle">$subtitle$</p>
+$endif$
+$for(author)$
+<p class="author">$author$</p>
+$endfor$
+$if(date)$
+<p class="date">$date$</p>
+$endif$
+</header>
+$endif$
+$if(toc)$
+<nav id="$idprefix$TOC">
+$toc$
+</nav>
+$endif$
+$body$
+$for(include-after)$
+$include-after$
+$endfor$
+</body>
+</html>
