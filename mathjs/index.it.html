@@ -6,17 +6,13 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
   <meta name="author" content="CapacitorSet">
   <title>How we exploited a remote execution vulnerability in math.js</title>
-  <style type="text/css">code{white-space: pre;}</style>
   <style type="text/css">
     /* Source: https://bestmotherfucking.website (with changes) */
     body{
-      margin: 1em auto;
+      margin: 0 auto;
       max-width: 40em;
-      padding: 0 .62em;
+      padding: 1rem .62em;
       font: 1.2em/1.62 sans-serif;
-    }
-    p {
-      text-align: justify;
     }
     h1, h2, h3 {
       line-height: 1.2;
@@ -25,13 +21,20 @@
       background-color: #eee;
       border-left: 6px solid silver;
       padding: 0.1em 1em 0.1em 1em;
+      margin: 0;
     }
-    pre, code {
-      overflow: scroll
+    pre {
+      padding: 0.5rem 1rem;
+      background-color: #f8f8f8;
+      border: 1px solid #eee;
+      border-radius: 0.15rem;
+      margin-bottom: 1rem;
+      overflow: auto;
     }
+
     @media print {
       body {
-        max-width:none
+        max-width: none
       }
     }
   </style>
