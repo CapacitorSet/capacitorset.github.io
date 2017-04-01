@@ -75,9 +75,9 @@ Result: {
   "WEB_MEMORY": "512",
   "MEMORY_AVAILABLE": "512",
   "NEW_RELIC_LOG": "stdout",
-  "NEW_RELIC_LICENSE_KEY": "<censored>",
+  "NEW_RELIC_LICENSE_KEY": "<redacted>",
   "DYNO": "web.1",
-  "PAPERTRAIL_API_TOKEN": "<censored>",
+  "PAPERTRAIL_API_TOKEN": "<redacted>",
   "PATH": "/app/.heroku/node/bin:/app/.heroku/yarn/bin:bin:node_modules/.bin:/usr/local/bin:/usr/bin:/bin:/app/bin:/app/node_modules/.bin",
   "WEB_CONCURRENCY": "1",
   "PWD": "/app",
@@ -85,7 +85,7 @@ Result: {
   "PS1": "\[\033[01;34m\]\w\[\033[00m\] \[\033[01;32m\]$ \[\033[00m\]",
   "SHLVL": "1",
   "HOME": "/app",
-  "PORT": "<censored>",
+  "PORT": "<redacted>",
   "NODE_HOME": "/app/.heroku/node",
   "_": "/app/.heroku/node/bin/node"
 }
