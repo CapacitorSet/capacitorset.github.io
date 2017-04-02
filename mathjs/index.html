@@ -135,7 +135,7 @@ spawn_sync = process.binding(&#39;spawn_sync&#39;); normalizeSpawnArguments = fu
 
 // Defines spawnSync, the function that will do the actual spawning
 spawnSync = function(){var d=normalizeSpawnArguments.apply(null,arguments);var a=d.options;var c;if(a.file=d.file,a.args=d.args,a.envPairs=d.envPairs,a.stdio=[{type:&#39;pipe&#39;,readable:!0,writable:!1},{type:&#39;pipe&#39;,readable:!1,writable:!0},{type:&#39;pipe&#39;,readable:!1,writable:!0}],a.input){var g=a.stdio[0]=util._extend({},a.stdio[0]);g.input=a.input;}for(c=0;c&lt;a.stdio.length;c++){var e=a.stdio[c]&amp;&amp;a.stdio[c].input;if(e!=null){var f=a.stdio[c]=util._extend({},a.stdio[c]);isUint8Array(e)?f.input=e:f.input=Buffer.from(e,a.encoding);}}console.log(a);var b=spawn_sync.spawn(a);if(b.output&amp;&amp;a.encoding&amp;&amp;a.encoding!==&#39;buffer&#39;)for(c=0;c&lt;b.output.length;c++){if(!b.output[c])continue;b.output[c]=b.output[c].toString(a.encoding);}return b.stdout=b.output&amp;&amp;b.output[1],b.stderr=b.output&amp;&amp;b.output[2],b.error&amp;&amp;(b.error= b.error + &#39;spawnSync &#39;+d.file,b.error.path=d.file,b.error.spawnargs=d.args.slice(1)),b;}</code></pre>
-<small>Gist [here](https://gist.github.com/CapacitorSet/c41ab55a54437dcbcb4e62713a195822</small>
+<small>Gist <a href="https://gist.github.com/CapacitorSet/c41ab55a54437dcbcb4e62713a195822">here</a></small>
 </noscript>
 <p>From here, <strong>we can spawn arbitrary processes</strong> and run shell commands:</p>
 <pre><code>&gt; return spawnSync(&#39;/usr/bin/whoami&#39;);
