@@ -42,6 +42,9 @@ head
 			border-left-style: solid;
 			padding-left: 15px;
 		}
+		article.disabled {
+			opacity: 0.5;
+		}
 
 		@media print {
 			body {
@@ -49,25 +52,19 @@ head
 			}
 		}
 body
+	// Self-hosted Piwik tracking
 	script(type="text/javascript").
-		// Self-hosted Piwik tracking
-
 		var _paq = _paq || [];
 		/* tracker methods like "setCustomDimension" should be called before "trackPageView" */
-		_paq.push(["setDocumentTitle", document.domain + "/" + document.title]);
-		_paq.push(["setCookieDomain", "capacitorset.github.io"]);
-		_paq.push(["setDomains", ["capacitorset.github.io"]]);
 		_paq.push(['trackPageView']);
 		_paq.push(['enableLinkTracking']);
 		(function() {
-			var u="//piwik.vps.denv.it/";
-			_paq.push(['setTrackerUrl', u+'piwik.php']);
-			_paq.push(['setSiteId', '4']);
-			var d=document, g=d.createElement('script'), s=d.getElementsByTagName('script')[0];
-			g.type='text/javascript'; g.async=true; g.defer=true; g.src=u+'piwik.js'; s.parentNode.insertBefore(g,s);
+		var u="//piwik.mastodonti.co/";
+		_paq.push(['setTrackerUrl', u+'piwik.php']);
+		_paq.push(['setSiteId', '2']);
+		var d=document, g=d.createElement('script'), s=d.getElementsByTagName('script')[0];
+		g.type='text/javascript'; g.async=true; g.defer=true; g.src=u+'piwik.js'; s.parentNode.insertBefore(g,s);
 		})();
-	noscript
-		p: img(src="//piwik.vps.denv.it/piwik.php?idsite=4&rec=1" style="border:0;" alt="")
 
 	header
 		h1 @CapacitorSet 
@@ -80,14 +77,15 @@ body
 			article#box-js(style="border-left-color: #e74c3c;")
 				h3: a(href="https://github.com/CapacitorSet/box-js") Box.js
 				p.
-					A tool for studying malware (droppers) written in JavaScript and JScript. It makes use of the Node.js sandbox and provides a dummy implementation of some key ActiveX components (XMLHTTP, ADODB.Stream and others). Used successfully in a "real environment" to automate malware analysis, as well as the <a href="https://github.com/ArchStrike/ArchStrike">ArchStrike</a> repo (<tt>boxjs-git</tt>).
+					A tool for studying malware (droppers) written in JavaScript and JScript. It makes use of the Node.js sandbox and provides a dummy implementation of some key ActiveX components (XMLHTTP, ADODB.Stream and others). Used successfully by security researchers and malware analysis services (#[a(href="https://www.sekoia.fr/en/") Sekoia]), and included in Lenny Zeltser's #[a(href="https://remnux.org/") REMNux] and #[a(href="https://github.com/ArchStrike/ArchStrike") ArchStrike].
 				i malware analysis, node.js
 			article#rebridge(style="border-left-color: #ff9900;")
 				h3: a(href="https://github.com/CapacitorSet/rebridge") Rebridge
 				p.
-					A completely transparent bridge between JavaScript and Redis, as a Node.js package (<a href="https://www.npmjs.com/package/rebridge">rebridge</a> on npm). Used successfully in <a href="https://github.com/crisbal/Telegram-Bot-Node/">Telegram-Bot-Node</a> as a persistent storage solution.
+					A completely transparent bridge between JavaScript and Redis, as a Node.js package (#[a(href="https://www.npmjs.com/package/rebridge") rebridge] on npm).
 				i redis, node.js
-			article#huft(style="border-left-color: #f1c40f;")
+			// Discontinued because it doesn't work with Tor
+			//article.disabled#huft(style="border-left-color: #f1c40f;")
 				h3: a(href="https://github.com/CapacitorSet/huft") Huft: human-friendly Tor
 				p.
 					A Firefox extension to translate classic .onion addresses (eg. #[tt http://expyuzz4wqqyqhjn.onion]) to a human-friendly list of words (#[tt huft://page-shower-samples-higher-someone-hire-bound]) and vice versa.
@@ -95,7 +93,7 @@ body
 		
 		section#contributions
 			h2 Contributions
-			article#telegram-bot-node(style="border-left-color: #8bc34a;")
+			article#telegram-bot-node(style="border-left-color: #f1c40f;")
 				h3: a(href="https://github.com/crisbal/Telegram-Bot-Node") crisbal/Telegram-Bot-Node
 				p.
 					A Telegram bot written in ES7 Node.js with a plugin architecture. Uses #[a(href="#rebridge") Rebridge] to implement persistent state for plugins.
@@ -103,11 +101,16 @@ body
 
 		section#articles
 			h2 Articles
-			article#mathjs(style="border-left-color: #00bcd4;")
+			article#mathjs(style="border-left-color: #8bc34a;")
 				h3: a(href="mathjs/index.html") How we exploited a remote execution vulnerability in math.js
 				p.
 					A short article about finding, exploiting and responsibly disclosing a vulnerability in #[a(href="https://www.npmjs.com/package/mathjs") math.js]. Also an experiment in minimalist, lightweight web design.
 				i hacking, node.js, css
+			article#box-js-esc(style="border-left-color: #00bcd4;")
+				h3: a(href="http://box.js.org/revealjs/eng/") Automating malware analysis with Node.js, Docker and RabbitMQ
+				p.
+					A presentation about box-js I held at #[a(href="https://www.endsummercamp.org/index.php/ESC17-Schedule") ESC17] in Padua.
+				i reveal.js, graphviz
 
 	br
 	footer
