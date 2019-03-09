@@ -25,8 +25,8 @@ function fingerprint() {
   var reqFp = new XMLHttpRequest();
   reqFp.onreadystatechange = function(e) {
     if (reqFp.readyState != 4) return;
-    if (reqFp.status != 200) {
-      alert("An error occurred during the HTTP request (see console for details?)");
+    if (reqFp.status != 200 && reqFp.status != 304) {
+        alert("An error occurred during the HTTP request (status code " + reqFp.status + ", see console for details?)");
       return;
     }
     var fp = reqFp.responseText;
@@ -35,8 +35,8 @@ function fingerprint() {
     var reqMd = new XMLHttpRequest();
     reqMd.onreadystatechange = function(e) {
       if (reqMd.readyState != 4) return;
-      if (reqMd.status != 200) {
-        alert("An error occurred during the HTTP request (see console for details?)");
+      if (reqMd.status != 200 && reqMd.status != 304) {
+        alert("An error occurred during the HTTP request (status code " + reqMd.status + ", see console for details?)");
         return;
       }
       document.getElementById("num-clients").textContent = reqMd.responseText;

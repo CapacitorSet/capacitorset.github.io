@@ -64,19 +64,19 @@ $endfor$
 <body>
 $body$
 <script type="text/javascript">
-  // Self-hosted Piwik tracking
-  var _paq = _paq || [];
-  /* tracker methods like "setCustomDimension" should be called before "trackPageView" */
-  _paq.push(['trackPageView']);
-  _paq.push(['enableLinkTracking']);
-  (function() {
-    var u="//matomo.jwlss.pw/";
-    _paq.push(['setTrackerUrl', u+'piwik.php']);
-    _paq.push(['setSiteId', '1']);
-    var d=document, g=d.createElement('script'), s=d.getElementsByTagName('script')[0];
-    g.type='text/javascript'; g.async=true; g.defer=true; g.src=u+'piwik.js'; s.parentNode.insertBefore(g,s);
-  })();
+var owa_baseUrl = 'https://owa.jwlss.pw/';
+var owa_cmds = owa_cmds || [];
+owa_cmds.push(['setSiteId', 'f2e9ee8a9891964269889d383908ca8c']);
+owa_cmds.push(['trackPageView']);
+owa_cmds.push(['trackClicks']);
+owa_cmds.push(['trackDomStream']);
+
+(function() {
+  var _owa = document.createElement('script'); _owa.type = 'text/javascript'; _owa.async = true;
+  owa_baseUrl = ('https:' == document.location.protocol ? window.owa_baseSecUrl || owa_baseUrl.replace(/http:/, 'https:') : owa_baseUrl );
+  _owa.src = owa_baseUrl + 'modules/base/js/owa.tracker-combined-min.js';
+  var _owa_s = document.getElementsByTagName('script')[0]; _owa_s.parentNode.insertBefore(_owa, _owa_s);
+}());
 </script>
-<noscript><p><img src="//matomo.jwlss.pw/piwik.php?idsite=1&amp;rec=1" style="border:0;" alt="" /></p></noscript>
 </body>
 </html>

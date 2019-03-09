@@ -75,8 +75,8 @@ function fingerprint() {
   var reqFp = new XMLHttpRequest();
   reqFp.onreadystatechange = function(e) {
     if (reqFp.readyState != 4) return;
-    if (reqFp.status != 200) {
-      alert("An error occurred during the HTTP request (see console for details?)");
+    if (reqFp.status != 200 && reqFp.status != 304) {
+        alert("An error occurred during the HTTP request (status code " + reqFp.status + ", see console for details?)");
       return;
     }
     var fp = reqFp.responseText;
@@ -85,8 +85,8 @@ function fingerprint() {
     var reqMd = new XMLHttpRequest();
     reqMd.onreadystatechange = function(e) {
       if (reqMd.readyState != 4) return;
-      if (reqMd.status != 200) {
-        alert("An error occurred during the HTTP request (see console for details?)");
+      if (reqMd.status != 200 && reqMd.status != 304) {
+        alert("An error occurred during the HTTP request (status code " + reqMd.status + ", see console for details?)");
         return;
       }
       document.getElementById("num-clients").textContent = reqMd.responseText;
@@ -133,19 +133,19 @@ function fingerprint() {
 <p><small>Released under <a href="https://creativecommons.org/licenses/by/4.0/"><strong>CC-BY 4.0</strong></a>.</p>
 </blockquote>
 <script type="text/javascript">
-  // Self-hosted Piwik tracking
-  var _paq = _paq || [];
-  /* tracker methods like "setCustomDimension" should be called before "trackPageView" */
-  _paq.push(['trackPageView']);
-  _paq.push(['enableLinkTracking']);
-  (function() {
-    var u="//matomo.jwlss.pw/";
-    _paq.push(['setTrackerUrl', u+'piwik.php']);
-    _paq.push(['setSiteId', '1']);
-    var d=document, g=d.createElement('script'), s=d.getElementsByTagName('script')[0];
-    g.type='text/javascript'; g.async=true; g.defer=true; g.src=u+'piwik.js'; s.parentNode.insertBefore(g,s);
-  })();
+var owa_baseUrl = 'https://owa.jwlss.pw/';
+var owa_cmds = owa_cmds || [];
+owa_cmds.push(['setSiteId', 'f2e9ee8a9891964269889d383908ca8c']);
+owa_cmds.push(['trackPageView']);
+owa_cmds.push(['trackClicks']);
+owa_cmds.push(['trackDomStream']);
+
+(function() {
+  var _owa = document.createElement('script'); _owa.type = 'text/javascript'; _owa.async = true;
+  owa_baseUrl = ('https:' == document.location.protocol ? window.owa_baseSecUrl || owa_baseUrl.replace(/http:/, 'https:') : owa_baseUrl );
+  _owa.src = owa_baseUrl + 'modules/base/js/owa.tracker-combined-min.js';
+  var _owa_s = document.getElementsByTagName('script')[0]; _owa_s.parentNode.insertBefore(_owa, _owa_s);
+}());
 </script>
-<noscript><p><img src="//matomo.jwlss.pw/piwik.php?idsite=1&amp;rec=1" style="border:0;" alt="" /></p></noscript>
 </body>
 </html>
